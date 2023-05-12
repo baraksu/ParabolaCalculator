@@ -4,7 +4,8 @@
 a DB 0
 b DB 0
 c DB 0
-y db 5 dup (?)
+y db 4 dup (?) 
+$ db '$'
 msg1 db 13,10,'please enter a value for a',13,10,'$'
 msg2 db 13,10,'please enter a value for b',13,10,'$'
 msg3 db 13,10,'please enter a value for c',13,10,'$' 
@@ -20,7 +21,8 @@ proc kelet
     int 21h
     mov ah,01h
     int 21h
-    mov bx,[bp+6]
+    mov bx,[bp+6] 
+    sub al,48
     mov [bx],al
     pop bp
     ret
@@ -34,7 +36,8 @@ proc getY
     int 21h
     cmp al,'e'
     je FINISH 
-    xor ah,ah
+    xor ah,ah  
+    sub al,48
     push ax
     call equation
     pop ax
@@ -51,16 +54,17 @@ endp getY
 proc equation
     push bp
     mov bp,sp
-    x equ [bp+5]
+    mov cx,[bp+4]
+    x equ cl
     mov al,a
-    imul x
+    mul x
     mov bx,ax
     xor ah,ah
     mov al,x
     imul bx
     mov bx,offset y
     mov [bx],dx
-    mov [bx+4],ax
+    mov [bx+2],ax
     mov al,b
     imul x
     add [bx],ax
@@ -87,7 +91,6 @@ push offset msg3
 call kelet
 pop ax
 pop ax
-MOV BX,OFFSET y
-mov [bx+4],'$'     
+MOV BX,OFFSET y     
 call getY
 end start
