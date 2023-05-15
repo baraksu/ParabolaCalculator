@@ -42,7 +42,7 @@ proc getY ;gets the x value(0-9),and uses the equation proc to get y,then prints
     push ax
     call equation
     pop ax 
-    call PrintY
+   
     lea dx,msg5
     mov ah,09h
     int 21h
@@ -69,26 +69,7 @@ proc equation;use the input values to calculate the y value,then it puts it in c
     add dl,c
     pop bp
     ret
-endp equation 
-proc PrintY    
-    push ax
-    push bx
-    push cx
-    push dx
-    mov al,dh
-    mul sixteen
-    mul sixteen
-    mov bx,ax
-    pop dx
-    mov al,dl
-    push dx
-    div sixteen
-    add bl,ah
-    mul sixteen
-    add bx,ax
-    int 21h
-    ret
-endp PrintY
+endp equation
 start:
 mov ax,@data
 mov ds,ax  
