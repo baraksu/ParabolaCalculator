@@ -1,4 +1,4 @@
- ;100
+ ;101 version
 .MODEL small
 .STACK 100h
 .DATA
@@ -30,7 +30,7 @@ proc kelet ;gets the parameter's value,from 0-9, and puts it in it's place
     ret
 endp kelet  
 proc getY ;gets the x value(0-9),and uses the equation proc to get y,then prints it     
-    restart:
+restart:
     lea dx,msg4
     MOV ah,09h
     int 21h    
@@ -51,7 +51,8 @@ proc getY ;gets the x value(0-9),and uses the equation proc to get y,then prints
     mov ah,09h
     int 21h
     jmp restart
-    FINISH:
+FINISH:
+    nop
     ret
 endp getY
 proc equation;use the input values to calculate the y value,then it puts it in cx
