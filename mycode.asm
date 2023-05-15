@@ -1,20 +1,17 @@
- ;101 version
+ ;100
 .MODEL small
 .STACK 100h
 .DATA
 a DB 0
 b DB 0
 c DB 0
-y db 3 dup (?) 
-$ db '$'
 msg1 db 13,10,'please enter a value for a',13,10,'$'
 msg2 db 13,10,'please enter a value for b',13,10,'$'
 msg3 db 13,10,'please enter a value for c',13,10,'$' 
 msg4 db 13,10,'please enter a value for x',13,10,'enter e to stop',13,10,'$'
 msg5 db 13,10,'y=$'
-sixteen db 16h
 .CODE 
-proc kelet ;gets the parameter's value,from 0-9, and puts it in it's place
+proc kelet
     push bp
     mov bp,sp
     mov bx,[bp+4]
@@ -29,8 +26,8 @@ proc kelet ;gets the parameter's value,from 0-9, and puts it in it's place
     pop bp
     ret
 endp kelet  
-proc getY ;gets the x value(0-9),and uses the equation proc to get y,then prints it     
-restart:
+proc getY    
+    restart:
     lea dx,msg4
     MOV ah,09h
     int 21h    
@@ -43,19 +40,17 @@ restart:
     push ax
     call equation
     pop ax 
-   
+    mov cx,dx
     lea dx,msg5
     mov ah,09h
     int 21h
-    lea dx,y
-    mov ah,09h
-    int 21h
+    mov ax,cx
+    call print_ax
     jmp restart
-FINISH:
-    nop
+    FINISH:
     ret
 endp getY
-proc equation;use the input values to calculate the y value,then it puts it in cx
+proc equation
     push bp
     mov bp,sp
     mov cx,[bp+4]
@@ -71,7 +66,34 @@ proc equation;use the input values to calculate the y value,then it puts it in c
     add dl,c
     pop bp
     ret
-endp equation
+endp equation 
+print_ax proc
+    cmp ax, 0
+    jne print_ax_r
+    push ax
+    mov al, '0'
+    mov ah, 0eh
+    int 10h
+    pop ax
+    ret 
+print_ax_r:
+    pusha
+    mov dx, 0
+    cmp ax, 0
+    je pn_done
+    mov bx, 10
+    div bx    
+    call print_ax_r
+    mov ax, dx
+    add al, 30h
+    mov ah, 0eh
+    int 10h    
+    jmp pn_done
+pn_done:
+    popa  
+    ret  
+endp print_ax
+
 start:
 mov ax,@data
 mov ds,ax  
@@ -89,7 +111,6 @@ push offset c
 push offset msg3
 call kelet
 pop ax
-pop ax
-MOV BX,OFFSET y     
+pop ax     
 call getY
 end start
