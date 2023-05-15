@@ -4,20 +4,21 @@
 a DB 0
 b DB 0
 c DB 0
-y db 4 dup (?) 
+y db 3 dup (?) 
 $ db '$'
 msg1 db 13,10,'please enter a value for a',13,10,'$'
 msg2 db 13,10,'please enter a value for b',13,10,'$'
 msg3 db 13,10,'please enter a value for c',13,10,'$' 
 msg4 db 13,10,'please enter a value for x',13,10,'enter e to stop',13,10,'$'
 msg5 db 13,10,'y=$'
+sixteen db 16h
 .CODE 
-proc kelet
+proc kelet ;gets the parameter's value,from 0-9, and puts it in it's place
     push bp
     mov bp,sp
     mov bx,[bp+4]
     lea dx,bx
-    mov ah,09h
+    mov ah,09h                        
     int 21h
     mov ah,01h
     int 21h
@@ -27,7 +28,7 @@ proc kelet
     pop bp
     ret
 endp kelet  
-proc getY     
+proc getY ;gets the x value(0-9),and uses the equation proc to get y,then prints it     
     restart:
     lea dx,msg4
     MOV ah,09h
@@ -40,7 +41,8 @@ proc getY
     sub al,48
     push ax
     call equation
-    pop ax
+    pop ax 
+    call PrintY
     lea dx,msg5
     mov ah,09h
     int 21h
@@ -51,28 +53,42 @@ proc getY
     FINISH:
     ret
 endp getY
-proc equation
+proc equation;use the input values to calculate the y value,then it puts it in cx
     push bp
     mov bp,sp
     mov cx,[bp+4]
     x equ cl
     mov al,a
     mul x
-    mov bx,ax
-    xor ah,ah
-    mov al,x
-    imul bx
-    mov bx,offset y
-    mov [bx],dx
-    mov [bx+2],ax
+    mul x
+    mov dx,ax
+    xor ax,ax
     mov al,b
-    imul x
-    add [bx],ax
-    add al,c
-    add [bx],al
+    mul x
+    add dx,ax
+    add dl,c
     pop bp
     ret
-endp equation
+endp equation 
+proc PrintY    
+    push ax
+    push bx
+    push cx
+    push dx
+    mov al,dh
+    mul sixteen
+    mul sixteen
+    mov bx,ax
+    pop dx
+    mov al,dl
+    push dx
+    div sixteen
+    add bl,ah
+    mul sixteen
+    add bx,ax
+    int 21h
+    ret
+endp PrintY
 start:
 mov ax,@data
 mov ds,ax  
