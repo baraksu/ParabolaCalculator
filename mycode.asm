@@ -3,11 +3,11 @@
 .DATA
 a DB 0
 b DB 0
-c DB 0
-msg1 db 13,10,'please enter a value for a',13,10,'$'
-msg2 db 13,10,'please enter a value for b',13,10,'$'
-msg3 db 13,10,'please enter a value for c',13,10,'$' 
-msg4 db 13,10,'please enter a value for x',13,10,'enter e to stop',13,10,'$'
+c Dw 0
+msg1 db 13,10,'please enter a value for a(1-9)',13,10,'$'
+msg2 db 13,10,'please enter a value for b(0-9)',13,10,'$'
+msg3 db 13,10,'please enter a value for c(0-9)',13,10,'$' 
+msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$'
 msg5 db 13,10,'y=$'
 .CODE 
 proc kelet
@@ -55,14 +55,14 @@ proc equation
     mov cx,[bp+4]
     x equ cl
     mov al,a
-    mul x
-    mul x
+    imul x
+    imul x
     mov dx,ax
     xor ax,ax
     mov al,b
-    mul x
+    imul x
     add dx,ax
-    add dl,c
+    add dx,c
     pop bp
     ret
 endp equation 
@@ -91,8 +91,37 @@ print_ax_r:
 pn_done:
     popa  
     ret  
-endp print_ax
-
+endp print_ax 
+proc vertex    
+    mov al,a
+    mov bl,2
+    mul bl
+    mov bx,ax
+    mov al,b
+    neg ax
+    idiv bl
+    push ax
+    call equation
+    pop cx
+    cmp cl,0
+    jg positive
+    mov bx,160d
+    neg cx
+    sub bl,cl
+    mov cx,bx
+    jmp continue
+    positive:
+    add cx,160d
+    continue:
+    mov al,01h
+    mov ah,0ch
+    mov bx,100d
+    sub bx,dx
+    mov dx,bx
+    xor bx,bx
+    int 10h
+    ret
+endp vertex
 start:
 mov ax,@data
 mov ds,ax  
@@ -112,4 +141,24 @@ call kelet
 pop ax
 pop ax     
 call getY
+mov ax,13h
+int 10h 
+;x axis
+mov al,01h
+mov ah,0ch
+xor bx,bx
+mov cx,320d
+mov dx,100d
+loopa:
+int 10h
+loop loopa
+;y axis
+mov cx,160d
+mov dx,0d
+y_axis:
+int 10h 
+inc dx
+cmp dx,200
+jne y_axis 
+call vertex
 end start
