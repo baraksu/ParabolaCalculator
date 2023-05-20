@@ -7,10 +7,13 @@ c Dw 0
 msg1 db 13,10,'please enter a value for a(1-9)',13,10,'$'
 msg2 db 13,10,'please enter a value for b(0-9)',13,10,'$'
 msg3 db 13,10,'please enter a value for c(0-9)',13,10,'$' 
-msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$'
+msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$' 
 msg5 db 13,10,'y=$'
+msg6 db 13,10,'hit any key to enter',13,10,'$'
 .CODE 
 proc kelet
+    ;gets the addresses of the parameter and of the required message to get it's value
+    ;prints the message,gets the parameter's value and puts it in the right place
     push bp
     mov bp,sp
     mov bx,[bp+4]
@@ -25,7 +28,9 @@ proc kelet
     pop bp
     ret
 endp kelet  
-proc getY    
+proc getY
+    ;gets x values as an input, then calculates their y values and prints them.
+    ;keeps going until the user writes 'e'.    
     restart:
     lea dx,msg4
     MOV ah,09h
@@ -49,7 +54,9 @@ proc getY
     FINISH:
     ret
 endp getY
-proc equation
+proc equation  
+    ;gets the x value from the stack and the parameters from the data segment.
+    ;calculates the matching y value and puts it in dx.
     push bp
     mov bp,sp
     mov cx,[bp+4]
@@ -67,6 +74,8 @@ proc equation
     ret
 endp equation 
 print_ax proc
+    ;gets a hexadecimal value in ax.
+    ;prints the digits of the value one by one in decimal base.
     cmp ax, 0
     jne print_ax_r
     push ax
@@ -92,7 +101,9 @@ pn_done:
     popa  
     ret  
 endp print_ax 
-proc vertex    
+proc vertex  
+    ;gets the parameters from the data segment.
+    ;calculates the x and y values of the parabola's vertex,then draws it.  
     mov al,a
     mov bl,2
     mul bl
@@ -101,8 +112,48 @@ proc vertex
     neg ax
     idiv bl
     push ax
+    call draw
+    ret
+endp vertex 
+proc right    
+    ;starting from the vertex, draws the on-screen points for each x values in the right side of the parabola.
+    another_right:
+    inc cx
+    cmp cx,320
+    je endOfRight
+    sub cx,160
+    push cx
+    call draw
+    jmp another_right
+    endOfRight:
+    ret
+endp right
+proc left 
+      ;starting from the vertex, draws the on-screen points for each x values in the left side of the parabola.
+    another_left:
+    dec cx
+    cmp cx,0
+    je endOfLeft
+    sub cx,160
+    push cx
+    call draw
+    jmp another_left
+    endOfLeft:
+    ret
+endp left
+proc draw
+    ;calculates the y value of the given x (from the stack)...
+    ;...then draws the point in the right spot on the screen.
+    pop di
     call equation
-    pop cx
+    pop cx        
+    mov bx,100d
+    sub bx,dx
+    mov dx,bx
+    cmp dx,200
+    jae endDraw
+    cmp dx,0
+    jbe endDraw
     cmp cl,0
     jg positive
     mov bx,160d
@@ -115,35 +166,39 @@ proc vertex
     continue:
     mov al,01h
     mov ah,0ch
-    mov bx,100d
-    sub bx,dx
-    mov dx,bx
     xor bx,bx
     int 10h
+    endDraw:
+    push di 
     ret
-endp vertex
+endp draw 
 start:
+;gets a parameter
 mov ax,@data
 mov ds,ax  
 push offset a
 push offset msg1
 call kelet 
 pop ax
-pop ax
+pop ax           
+;gets b parameter
 push offset b
 push offset msg2
 call kelet      
 pop ax
-pop ax
+pop ax       
+;gets c parameter
 push offset c
 push offset msg3
 call kelet
 pop ax
-pop ax     
-call getY
-mov ax,13h
-int 10h 
-;x axis
+pop ax 
+;gives y values for input x values
+call getY    
+;set graphic mode
+mov ax, 13h
+int 10h
+;draws the x axis
 mov al,01h
 mov ah,0ch
 xor bx,bx
@@ -152,13 +207,28 @@ mov dx,100d
 loopa:
 int 10h
 loop loopa
-;y axis
+;draws the y axis
 mov cx,160d
 mov dx,0d
 y_axis:
 int 10h 
 inc dx
 cmp dx,200
-jne y_axis 
+jne y_axis
+;draws the vertex of the parabola 
 call vertex
+mov si,cx
+;draws the right side of the parabola 
+call right
+;draws the left side of the parabola
+mov cx,si 
+call left
+;exit
+lea dx,msg6
+mov ah,09h
+int 21h
+mov ah,01h
+int 21h
+mov ah,4ch
+int 21h
 end start
