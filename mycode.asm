@@ -9,7 +9,8 @@ msg2 db 13,10,'please enter a value for b(0-9)',13,10,'$'
 msg3 db 13,10,'please enter a value for c(0-9)',13,10,'$' 
 msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$' 
 msg5 db 13,10,'y=$'
-msg6 db 13,10,'hit any key to enter',13,10,'$'
+msg6 db 13,10,'hit any key to exit',13,10,'$'
+endCheck db 0
 .CODE 
 proc kelet
     ;gets the addresses of the parameter and of the required message to get it's value
@@ -84,7 +85,7 @@ print_ax proc
     int 10h
     pop ax
     ret 
-print_ax_r:
+    print_ax_r:
     pusha
     mov dx, 0
     cmp ax, 0
@@ -97,10 +98,33 @@ print_ax_r:
     mov ah, 0eh
     int 10h    
     jmp pn_done
-pn_done:
+    pn_done:
     popa  
     ret  
-endp print_ax 
+endp print_ax
+proc x_axis     
+     ;draws the x axis
+     mov al,01h
+     mov ah,0ch
+     xor bx,bx
+     mov cx,320d
+     mov dx,100d
+     next:
+     int 10h
+     loop next
+     ret
+endp x_axis
+proc yAxis 
+    ;draws the y axis
+    mov cx,160d
+    mov dx,0d
+    y_axis:
+    int 10h 
+    inc dx
+    cmp dx,200
+    jne y_axis
+    ret
+endp yAxis
 proc vertex  
     ;gets the parameters from the data segment.
     ;calculates the x and y values of the parabola's vertex,then draws it.  
@@ -124,19 +148,24 @@ proc right
     sub cx,160
     push cx
     call draw
+    cmp endCheck,1
+    je endOfRight
     jmp another_right
     endOfRight:
+    mov endCheck,0
     ret
 endp right
 proc left 
-      ;starting from the vertex, draws the on-screen points for each x values in the left side of the parabola.
+    ;starting from the vertex, draws the on-screen points for each x values in the left side of the parabola.
     another_left:
     dec cx
     cmp cx,0
     je endOfLeft
     sub cx,160
     push cx
-    call draw
+    call draw   
+    cmp endCheck,1
+    je endOfleft
     jmp another_left
     endOfLeft:
     ret
@@ -146,10 +175,15 @@ proc draw
     ;...then draws the point in the right spot on the screen.
     pop di
     call equation
-    pop cx        
-    mov bx,100d
-    sub bx,dx
-    mov dx,bx
+    pop cx  
+    mov ax,dx
+    mov bx,5
+    div bl
+    xor ah,ah
+    mov dx,ax        
+    mov ax,100d
+    sub ax,dx
+    mov dx,ax
     cmp dx,200
     jae endDraw
     cmp dx,0
@@ -164,11 +198,14 @@ proc draw
     positive:
     add cx,160d
     continue:
-    mov al,01h
+    mov al,04h
     mov ah,0ch
     xor bx,bx
     int 10h
+    jmp endOfDraw
     endDraw:
+    mov endCheck,1
+    endOfDraw:
     push di 
     ret
 endp draw 
@@ -199,22 +236,9 @@ call getY
 mov ax, 13h
 int 10h
 ;draws the x axis
-mov al,01h
-mov ah,0ch
-xor bx,bx
-mov cx,320d
-mov dx,100d
-loopa:
-int 10h
-loop loopa
+call x_axis
 ;draws the y axis
-mov cx,160d
-mov dx,0d
-y_axis:
-int 10h 
-inc dx
-cmp dx,200
-jne y_axis
+call yAxis
 ;draws the vertex of the parabola 
 call vertex
 mov si,cx
