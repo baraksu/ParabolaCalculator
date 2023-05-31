@@ -143,8 +143,6 @@ proc right
     ;starting from the vertex, draws the on-screen points for each x values in the right side of the parabola.
     another_right:
     inc cx
-    cmp cx,320
-    je endOfRight
     sub cx,160
     push cx
     call draw
@@ -159,8 +157,6 @@ proc left
     ;starting from the vertex, draws the on-screen points for each x values in the left side of the parabola.
     another_left:
     dec cx
-    cmp cx,0
-    je endOfLeft
     sub cx,160
     push cx
     call draw   
