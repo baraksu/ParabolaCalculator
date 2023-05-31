@@ -1,6 +1,16 @@
 .MODEL small
 .STACK 100h
-.DATA
+.DATA 
+
+ msg0 db '                       _           _      ',13,10, 
+db '                       | |         | |      ',13,10,
+db '  _ __   __ _ _ __ __ _| |__   ___ | | __ _ ',13,10,
+db ' | _  \ / _` | __/ _` | _   \ / _ \| |/ _` |',13,10,
+db ' | |_) | (_| | | | (_| | |_) | (_) | | (_| |',13,10,
+db ' | .__/ \__,_|_|  \__,_|_.__/ \___/|_|\__,_|',13,10,
+db ' | |                                        ',13,10,
+db ' |_|                                        ',13,10,'$'
+
 a DB 0;the first parameter
 b DB 0;the second parameter
 c Dw 0;the third parameter
@@ -206,9 +216,12 @@ proc draw
     ret
 endp draw 
 start:
-;gets a parameter
 mov ax,@data
-mov ds,ax  
+mov ds,ax        
+lea dx,msg0
+mov ah,09h
+int 21h
+;gets a parameter 
 push offset a
 push offset msg1
 call kelet 
