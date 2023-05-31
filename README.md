@@ -15,16 +15,20 @@
 בהזנת e המשתמש מסמן למעשה את רצונו להפסיק את קבלת ערכי ה-y והמעבר לחלק הבא של הפרויקט- ציור הפרבולה. 
 הפרבולה מצוירת באמצעות חישוב ערך y לכל x במסך,צימצומו ב-5, וצביעת הפיקסל המתאים אם הוא אכן נמצא במסגרת המסך.
 # דוגמאות ריצה
-דוגמא לפרמטרים הנמוכים ביותר:
+## כותרת הפתיחה:
+![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/bfd3a25e-1282-476c-af09-643c515aabf7)
+
+## דוגמא לפרמטרים הנמוכים ביותר:
 
 ![צילום מסך 2023-05-31 205201](https://github.com/baraksu/ParabolaCalculator/assets/131455092/97e0dfd2-70fd-4ae1-a58e-837cedcf0253)
 ![צילום מסך 2023-05-31 210025](https://github.com/baraksu/ParabolaCalculator/assets/131455092/59cc060a-4a0f-44e9-8529-31628cbe8907)
-דוגמא לפרמטרים רנדומלים:
+## דוגמא לפרמטרים רנדומלים:
 ![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/5f3a7e33-abd2-4b2d-9303-7b443c28cf72)
 ![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/2b7c5f5f-3c0a-44cb-9e7f-3f451e39dee9)
-דוגמא לפרמטרים בעלי הערכים המקסימאלים:
+## דוגמא לפרמטרים בעלי הערכים המקסימאלים:
 ![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/f3e9be78-7520-460f-9b02-05312ea4a8bb)
-![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/2cffe148-4019-45d4-9b97-8f72116d9507)
+![image](https://github.com/baraksu/ParabolaCalculator/assets/131455092/78d72c7a-db20-4e7f-8ffe-08d30c250cb7)
+
 
 # שלבי הפיתוח
 ## שלב א'
