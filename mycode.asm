@@ -18,7 +18,7 @@ msg1 db 13,10,'please enter a value for a(1-9)',13,10,'$';a's input-value reques
 msg2 db 13,10,'please enter a value for b(0-9)',13,10,'$';b's input-value request
 msg3 db 13,10,'please enter a value for c(0-9)',13,10,'$';c's input-value request 
 msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$';x's endless input-value requests, until the user enters 'e' 
-msg5 db 13,10,'y=$';a message to print before the y's calculated value
+msg5 db 13,10,'axx+bx+c=y=$';a message to print before the y's calculated value
 msg6 db 13,10,'hit any key to exit',13,10,'$';exit message
 endCheck db 0;an indicator that is used to check if the drawing process has been finished
 .CODE 
@@ -27,8 +27,7 @@ proc kelet
     ;prints the message,gets the parameter's value and puts it in the right place
     push bp
     mov bp,sp
-    mov bx,[bp+4]
-    lea dx,bx
+    mov dx,[bp+4]
     mov ah,09h                        
     int 21h
     mov ah,01h
