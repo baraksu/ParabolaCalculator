@@ -20,7 +20,11 @@ msg3 db 13,10,'please enter a value for c(0-9)',13,10,'$';c's input-value reques
 msg4 db 13,10,'please enter a value for x(0-9)',13,10,'enter e to stop',13,10,'$';x's endless input-value requests, until the user enters 'e' 
 msg5 db 13,10,'axx+bx+c=y=$';a message to print before the y's calculated value
 msg6 db 13,10,'hit any key to exit',13,10,'$';exit message
-endCheck db 0;an indicator that is used to check if the drawing process has been finished
+endCheck db 0;an indicator that is used to check if the drawing process has been finished 
+msg7 db 13,10,'a=$'
+msg8 db 13,10,'b=$'
+msg9 db 13,10,'c=$'
+msg10 db 13,10,'x=$'
 .CODE 
 proc kelet
     ;gets the addresses of the parameter and of the required message to get it's value
@@ -37,7 +41,20 @@ proc kelet
     mov [bx],al
     pop bp
     ret
-endp kelet  
+endp kelet   
+proc summary    
+    push bp
+    mov bp,sp
+    mov dx,[bp+4]
+    mov ah,09h
+    int 21h
+    mov dl,[bp+6]
+    add dl,30h
+    mov ah,02h
+    int 21h
+    pop bp
+    ret
+    endp summary
 proc getY
     ;gets x values as an input, then calculates their y values and prints them.
     ;keeps going until the user writes 'e'.    
@@ -51,7 +68,30 @@ proc getY
     je FINISH 
     xor ah,ah  
     sub al,48
+    push ax 
+    mov al,a
+    xor ah,ah
     push ax
+    push offset msg7  
+    call summary
+    pop ax
+    pop ax
+    mov al,b
+    xor ah,ah
+    push ax
+    push offset msg8  
+    call summary
+    pop ax
+    pop ax  
+    mov ax,c
+    push ax
+    push offset msg9
+    call summary
+    pop ax
+    pop ax
+    push offset msg10  
+    call summary
+    pop ax
     call equation
     pop ax 
     mov cx,dx
